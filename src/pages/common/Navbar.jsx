@@ -17,6 +17,7 @@ const Navbar = () => {
             <a href="#" className="text-gray-600 hover:text-green-600 transition-colors">Tools</a>
             <a href="#" className="text-gray-600 hover:text-green-600 transition-colors">How It Works</a>
             <a href="#" className="text-gray-600 hover:text-green-600 transition-colors">Contact</a>
+            <a href="/login" className="text-gray-600 hover:text-green-600 transition-colors">Login</a>
           </nav>
           <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}

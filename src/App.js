@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Landing from "./pages/Landing";
 import Navbar from "./pages/common/Navbar";
+import LoginPage from "./pages/auth/Login";
 
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<LoginPage />} />
           
           {/* PRIVATE ROUTES BELOW THIS */}
           {/* <Route path="/" element={<Private />}>

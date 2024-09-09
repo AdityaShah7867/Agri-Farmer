@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Landing from "./pages/Landing";
 import Navbar from "./pages/common/Navbar";
 import LoginPage from "./pages/auth/Login";
+import ProductListingForm from "./pages/Tools/AddTools";
+import AvailableToolsListing from "./pages/Tools/GetAvailable";
 
 
 const App = () => {
@@ -17,7 +19,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<LoginPage />} />
-          
+          <Route path="/addtools" element={<ProductListingForm />} />
+          <Route path="/tools" element={<AvailableToolsListing />} />
           {/* PRIVATE ROUTES BELOW THIS */}
           {/* <Route path="/" element={<Private />}>
             <Route path="/editcustomer" element={<CustomerEdiit />} />

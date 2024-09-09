@@ -161,7 +161,7 @@ const LoginPage = () => {
       <div className="hidden lg:block relative w-0 flex-1">
         <img
           className="absolute inset-0 h-full w-full object-cover"
-          src="/api/placeholder/1000/1000"
+          src="https://www.holtags.com/images/AG_TerraGator.jpg"
           alt="Farm field"
         />
         <div className="absolute inset-0 bg-green-700 opacity-75"></div>

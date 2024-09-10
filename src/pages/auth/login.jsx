@@ -11,7 +11,7 @@ const LoginPage = () => {
     // Here you would typically handle the login logic
     console.log('Login attempted with:', email, password);
   };
-
+//test
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Left side - Login Form */}

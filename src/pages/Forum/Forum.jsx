@@ -9,7 +9,7 @@ const mockPosts = [
       avatar: '/api/placeholder/40/40',
     },
     content: 'Looking for high-yield wheat seeds for the upcoming season. Any recommendations?',
-    image: '/api/placeholder/400/300',
+    image: 'https://eos.com/wp-content/uploads/2020/09/1_1920%D1%85600-e1670509527732.jpg.webp',
     likes: 15,
     comments: 7,
     timestamp: '2 hours ago'
@@ -21,7 +21,7 @@ const mockPosts = [
       avatar: '/api/placeholder/40/40',
     },
     content: 'Surplus organic tomatoes available. Contact for bulk orders!',
-    video: '/api/placeholder/400/300',
+    video: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     likes: 23,
     comments: 12,
     timestamp: '5 hours ago'

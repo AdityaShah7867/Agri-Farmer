@@ -53,6 +53,30 @@ const Navbar = () => {
               Contact
             </a>
             <a
+              href="/map"
+              className="text-gray-600 hover:text-green-600 transition-colors"
+            >
+              map
+            </a>
+            <a
+              href="/forum"
+              className="text-gray-600 hover:text-green-600 transition-colors"
+            >
+              Forum
+            </a>
+            <a
+              href="/calendar"
+              className="text-gray-600 hover:text-green-600 transition-colors"
+            >
+              Calendar
+            </a>
+            <a
+              href="/videocall"
+              className="text-gray-600 hover:text-green-600 transition-colors"
+            >
+              VideoCall
+            </a>
+            <a
               href="/login"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >

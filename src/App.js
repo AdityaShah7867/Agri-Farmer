@@ -7,7 +7,7 @@ import Navbar from "./pages/common/Navbar";
 import LoginPage from "./pages/auth/Login";
 import ProductListingForm from "./pages/Tools/AddTools";
 import AvailableToolsListing from "./pages/Tools/GetAvailable";
-
+import Map from "./pages/map/Map"
 
 const App = () => {
   return (
@@ -21,6 +21,7 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/addtools" element={<ProductListingForm />} />
           <Route path="/tools" element={<AvailableToolsListing />} />
+          <Route path="/map" element={<Map />} />
           {/* PRIVATE ROUTES BELOW THIS */}
           {/* <Route path="/" element={<Private />}>
             <Route path="/editcustomer" element={<CustomerEdiit />} />

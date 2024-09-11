@@ -10,6 +10,7 @@ import AvailableToolsListing from "./pages/Tools/GetAvailable";
 import Map from "./pages/map/Map"
 import Forum from "./pages/Forum/Forum";
 import RentalCalendar from "./pages/Calender/page";
+
 const App = () => {
   return (
     <>

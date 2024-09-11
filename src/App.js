@@ -10,6 +10,7 @@ import AvailableToolsListing from "./pages/Tools/GetAvailable";
 import Map from "./pages/map/Map"
 import Forum from "./pages/Forum/Forum";
 import RentalCalendar from "./pages/Calender/page";
+import Videocall from "./pages/video call/Videocall";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="/map" element={<Map />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/calendar" element={<RentalCalendar />} />
+          <Route path="/videocall" element={<Videocall />} />
           {/* PRIVATE ROUTES BELOW THIS */}
           {/* <Route path="/" element={<Private />}>
             <Route path="/editcustomer" element={<CustomerEdiit />} />

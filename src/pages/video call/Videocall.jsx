@@ -31,7 +31,14 @@ const Videocall = () => {
 
   return (
     <div className="text-white">
+
+      
       <MeetingAppProvider>
+      <a href="/" 
+        className='bg-indigo-500 text-white hover:bg-indigo-600 transition-colors p-2 rounded-xl absolute left-10  top-5'
+      >
+        HOME
+      </a>
         {isMeetingStarted ? (
 
           <MeetingProvider

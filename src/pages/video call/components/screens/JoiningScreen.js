@@ -400,6 +400,11 @@ export function JoiningScreen({
 
   return (
     <div className="fixed inset-0">
+      <a href="/"  
+        className='bg-indigo-500 text-white hover:bg-indigo-600 transition-colors p-2 rounded-xl absolute left-10  top-5'
+      >
+        HOME
+      </a>
       <div className="overflow-y-auto flex flex-col flex-1 h-screen bg-gray-800">
         <div className="flex flex-1 flex-col md:flex-row items-center justify-center md:m-[72px] m-16">
           <div className="container grid  md:grid-flow-col grid-flow-row ">
@@ -465,7 +470,7 @@ export function JoiningScreen({
                     {!isMobile && (
                       <>
                         <div className="absolute top-2 right-10">
-                          <NetworkStats />
+                          {/* <NetworkStats /> */}
                         </div>
 
                         <div className="flex mt-3">

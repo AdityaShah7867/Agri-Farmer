@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Share2 } from 'lucide-react';
 
 const Product = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleMouseEnter = () => {
+    setShowPopup(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowPopup(false);
+  };
+
   const productDetails = {
     name: "Heavy-Duty Tractor",
     description:
@@ -34,20 +44,32 @@ const Product = () => {
 
   return (
     <div className=" mx-auto p-6 bg-white rounded-lg mt-10">
-      <h1 className="text-3xl font-bold mb-4">Heavy-Duty Tractor</h1>
-      <p className="text-gray-600 mb-6">
+      <h1 className="text-3xl font-bold mb-4 text-center">Heavy-Duty Tractor</h1>
+      <p className="text-gray-600 mb-6 text-center text-lg">
         A powerful tractor suitable for large-scale farming operations. Ideal
         for plowing, tilling, and heavy hauling tasks.
       </p>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/2">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="lg:w-1/2">
           <img
             src="https://www.deere.co.in/assets/images/region-1/products/tractors/john-deere-e-series-cab.jpg"
             alt="Heavy-Duty Tractor"
             className="w-full h-auto rounded-lg shadow-md"
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="lg:w-1/2">
+          <button onClick={handleShare}
+            className='bg-indigo-500 text-white hover:bg-indigo-600 transition-colors p-2 rounded-xl absolute right-10 '
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Share2 className="w-5 h-5" />
+          </button>
+          {showPopup && (
+            <div className="bg-gray-200 text-gray-600 p-2 rounded-lg absolute mt-8 z-10 right-5 ">
+              Share this product
+            </div>
+          )}
           <div className="mb-4">
             <h2 className="text-xl font-semibold mb-2">Product Quality</h2>
             <div className="flex items-center">
@@ -84,11 +106,15 @@ const Product = () => {
               $80 - $100 per day (varies based on rental duration)
             </p>
           </div>
+          <button className=" bg-green-500 text-white py-2 px-4 rounded-lg w-full mb-4 hover:bg-green-600 transition-colors">
+            <i className="fas fa-shopping-cart" />
+            Rent Now
+          </button>
+
+          <p className='text-xl font-semibold'>Owner Details:</p>
+          <p className='mb-2'>Name: XYZ</p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-green-600 transition-colors">
-              <i className="fas fa-shopping-cart" />
-              Rent Now
-            </button>
+
             <button className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors">
               <i className="fas fa-comment" />
               Chat
@@ -102,13 +128,13 @@ const Product = () => {
             <i className="fas fa-robot" />
             AI Assistance
           </button>
-          <button
+          {/* <button
             onClick={handleShare}
             className="w-full mt-4 bg-indigo-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-600 transition-colors"
           >
             <Share2 className="w-5 h-5" />
             Share
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

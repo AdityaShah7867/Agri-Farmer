@@ -22,11 +22,11 @@ const Navbar = () => {
     <div>
       <header className="bg-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
+          <a href="/" className="flex items-center space-x-2">
             
             <Tractor size={32} className="text-green-600" />
             <h1 className="text-2xl font-bold text-gray-800">FarmTools</h1>
-          </div>
+          </a>
           <nav className="hidden md:flex space-x-6">
             <a
               href="/"

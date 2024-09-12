@@ -190,42 +190,7 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">FarmTools</h3>
-              <p className="text-gray-400">Empowering farmers with the right tools for success.</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Home</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Tools</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
-              <p className="text-gray-400">1234 Farm Road,<br />Rural County, State 12345</p>
-              <p className="text-gray-400 mt-2">Phone: (123) 456-7890</p>
-              <p className="text-gray-400">Email: info@farmtools.com</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors"><Users size={24} /></a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors"><Users size={24} /></a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors"><Users size={24} /></a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p className="text-gray-400">&copy; 2024 FarmTools. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 };

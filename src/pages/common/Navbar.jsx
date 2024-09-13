@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Hammer,
 } from "lucide-react";
+import GoogleTranslate from "../../Translate";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,6 +76,12 @@ const Navbar = () => {
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               VideoCall
+            </a>
+            <a
+              href="/setting"
+              className="text-gray-600 hover:text-green-600 transition-colors"
+            >
+              Setting
             </a>
             <a
               href="/login"

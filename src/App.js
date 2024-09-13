@@ -13,6 +13,8 @@ import RentalCalendar from "./pages/Calender/page";
 import Videocall from "./pages/video call/Videocall";
 import Product from "./pages/Product/Product";
 import Footer from "./pages/common/Footer";
+import Setting from "./pages/Setting/Setting";
+import MicrosoftTranslator from "./Translate";
 
 const AppContent = () => {
   const location = useLocation(); // Now inside Router
@@ -32,6 +34,7 @@ const AppContent = () => {
         <Route path="/calendar" element={<RentalCalendar />} />
         <Route path="/videocall" element={<Videocall />} />
         <Route path="/product" element={<Product />} />
+        <Route path='/Setting' element={<Setting />} />
       </Routes>
       {location.pathname !== "/videocall" && <Footer />}
 

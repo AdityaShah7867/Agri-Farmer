@@ -15,6 +15,7 @@ import Product from "./pages/Product/Product";
 import Footer from "./pages/common/Footer";
 import Setting from "./pages/Setting/Setting";
 import MicrosoftTranslator from "./Translate";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 const AppContent = () => {
   const location = useLocation(); // Now inside Router
@@ -34,6 +35,7 @@ const AppContent = () => {
         <Route path="/calendar" element={<RentalCalendar />} />
         <Route path="/videocall" element={<Videocall />} />
         <Route path="/product" element={<Product />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path='/Setting' element={<Setting />} />
       </Routes>
       {location.pathname !== "/videocall" && <Footer />}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Tractor,
   Wrench,
@@ -13,82 +14,100 @@ import {
   Leaf,
   ShieldCheck,
   Hammer,
+  LogOut
 } from "lucide-react";
 import GoogleTranslate from "../../Translate";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div>
       <header className="bg-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/" className="flex items-center space-x-2">
-            
+          <NavLink to="/" className="flex items-center space-x-2">
             <Tractor size={32} className="text-green-600" />
             <h1 className="text-2xl font-bold text-gray-800">FarmTools</h1>
-          </a>
+          </NavLink>
           <nav className="hidden md:flex space-x-6">
-            <a
-              href="/"
+            <NavLink
+              to="/"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Home
-            </a>
-            <a
-              href="/tools"
+            </NavLink>
+            <NavLink
+              to="/tools"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Tools
-            </a>
-            <a
-              href="/addtools"
+            </NavLink>
+            <NavLink
+              to="/addtools"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Add Tool
-            </a>
-            <a
-              href="#"
+            </NavLink>
+            <NavLink
+              to="#"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Contact
-            </a>
-            <a
-              href="/map"
+            </NavLink>
+            <NavLink
+              to="/map"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               map
-            </a>
-            <a
-              href="/forum"
+            </NavLink>
+            <NavLink
+              to="/forum"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Forum
-            </a>
-            <a
-              href="/calendar"
+            </NavLink>
+            <NavLink
+              to="/calendar"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Calendar
-            </a>
-            <a
-              href="/videocall"
+            </NavLink>
+            <NavLink
+              to="/videocall"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               VideoCall
-            </a>
-            <a
-              href="/setting"
+            </NavLink>
+            <NavLink
+              to="/setting"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Setting
-            </a>
-            <a
-              href="/login"
-              className="text-gray-600 hover:text-green-600 transition-colors"
-            >
-              Login
-            </a>
+            </NavLink>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-green-600 transition-colors flex items-center"
+              >
+                <LogOut size={18} className="mr-1" />
+                Logout
+              </button>
+            ) : (
+              <NavLink
+                to="/login"
+                className="text-gray-600 hover:text-green-600 transition-colors"
+              >
+                Login
+              </NavLink>
+            )}
           </nav>
           <button
             className="md:hidden"
@@ -100,36 +119,45 @@ const Navbar = () => {
         {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden bg-white py-4 px-4">
-            <a
-              href="#"
+            <NavLink
+              to="/"
               className="block py-2 text-gray-600 hover:text-green-600 transition-colors"
             >
               Home
-            </a>
-            <a
-              href="#"
+            </NavLink>
+            <NavLink
+              to="/tools"
               className="block py-2 text-gray-600 hover:text-green-600 transition-colors"
             >
               Tools
-            </a>
-            <a
-              href="/addtools"
+            </NavLink>
+            <NavLink
+              to="/addtools"
               className="text-gray-600 hover:text-green-600 transition-colors"
             >
               Add Tool
-            </a>
-            <a
-              href="#"
+            </NavLink>
+            <NavLink
+              to="#"
               className="block py-2 text-gray-600 hover:text-green-600 transition-colors"
             >
               Contact
-            </a>
-            <a
-              href="/login"
-              className="text-gray-600 hover:text-green-600 transition-colors"
-            >
-              Login
-            </a>
+            </NavLink>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="block py-2 text-gray-600 hover:text-green-600 transition-colors"
+              >
+                Logout
+              </button>
+            ) : (
+              <NavLink
+                to="/login"
+                className="block py-2 text-gray-600 hover:text-green-600 transition-colors"
+              >
+                Login
+              </NavLink>
+            )}
           </div>
         )}
       </header>

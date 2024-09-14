@@ -1,17 +1,28 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, LogIn, Tractor, Check } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Loader } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { login, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically handle the login logic
-    console.log('Login attempted with:', email, password);
+      await login(email, password).then((result) => {
+        if (result) {
+          navigate('/');
+        }
+        console.log('Login successful:', result);
+    }).catch((error) => {
+        console.error('Login failed:', error);
+    });
   };
-//test
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Left side - Login Form */}
@@ -144,10 +155,12 @@ const LoginPage = () => {
 
                 <div>
                   <button
-                    type="submit"
+
+                    disabled={loading}
+                      onClick={handleSubmit}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   >
-                    <LogIn className="h-5 w-5 mr-2" />
+                    {loading ? <Loader className="h-5 w-5 mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
                     Sign in
                   </button>
                 </div>

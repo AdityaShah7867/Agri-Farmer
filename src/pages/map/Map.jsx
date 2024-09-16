@@ -1,14 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { useTool } from '../../context/ToolContext';
 
 const containerStyle = {
   width: '100%',
   height: '70vh'
 };
 
+// Update the center to use the owner's location
 const center = {
-  lat: 19.4655, // Latitude for Virar, Mumbai
-  lng: 72.7956  // Longitude for Virar, Mumbai
+  lat: 19.4528376, // Latitude from owner details
+  lng: 19.4528376  // Longitude from owner details (Note: this seems to be the same as latitude in the provided data)
 };
 
 // Custom icons for different tool categories
@@ -19,25 +21,56 @@ const icons = {
   default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-92otGDh6GDE3F8Qp2entkhQprJVRa2Zc9w&s'
 };
 
-// Mock data for tools near Virar, Mumbai
-const allTools = [
-  { id: 1, name: 'Tractor', position: { lat: 19.4660, lng: 72.7970 }, price: 1000, category: 'heavy' },
-  { id: 2, name: 'Plow', position: { lat: 19.4640, lng: 72.7940 }, price: 500, category: 'attachment' },
-  { id: 3, name: 'Harvester', position: { lat: 19.4670, lng: 72.7930 }, price: 1500, category: 'heavy' },
-  { id: 4, name: 'Seeder', position: { lat: 19.4630, lng: 72.7960 }, price: 750, category: 'attachment' },
-  { id: 5, name: 'Sprayer', position: { lat: 19.4650, lng: 72.7980 }, price: 600, category: 'handheld' },
-];
+// Update the allTools array with the new data
+const modifyToolData = (tools) => {
+  return tools.map(tool => ({
+    id: tool.id,
+    name: tool.name,
+    position: { lat: tool.owner.latitude, lng: tool.owner.longitude },
+    price: tool.pricePerDay,
+    category: getCategoryFromName(tool.name),
+    description: tool.description,
+    available: tool.available,
+    quantity: tool.quantity,
+    images: tool.images,
+    owner: {
+      name: tool.owner.name,
+      email: tool.owner.email,
+      phone: tool.owner.phone
+    }
+  }));
+};
+
+
+
+const getCategoryFromName = (name) => {
+  const lowercaseName = name.toLowerCase();
+  if (lowercaseName.includes('tractor') || lowercaseName.includes('harvester')) return 'heavy';
+  if (lowercaseName.includes('plough') || lowercaseName.includes('seeder')) return 'attachment';
+  if (lowercaseName.includes('spade') || lowercaseName.includes('hoe')) return 'handheld';
+  return 'default';
+};
+
+
 
 const Map = () => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: `${process.env.REACT_APP_GOOGLE_MAPS_API_LOL}`
   });
 
+  const { tools } = useTool();
+
+  console.log(tools);
+
+  const allTools = modifyToolData(tools);
+
   const [map, setMap] = useState(null);
   const [selectedTool, setSelectedTool] = useState(null);
-  const [filteredTools, setFilteredTools] = useState(allTools);
+  const [filteredTools, setFilteredTools] = useState(tools);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterPrice, setFilterPrice] = useState('all');
+
+  console.log(allTools)
 
   const onLoad = useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds();
@@ -142,8 +175,16 @@ const Map = () => {
               <div>
                 <h3 className="font-bold text-lg">{selectedTool.name}</h3>
                 <p className="text-gray-600">{selectedTool.category}</p>
+                <p className="text-sm">{selectedTool.description}</p>
                 <p className="font-medium">₹{selectedTool.price}/day</p>
-                <button className="mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition duration-300">Rent Now</button>
+                <p className="text-sm">Quantity: {selectedTool.quantity}</p>
+                <p className="text-sm">Owner: {selectedTool.owner.name}</p>
+                <p className="text-sm">Contact: {selectedTool.owner.phone}</p>
+                {selectedTool.available ? (
+                  <button className="mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition duration-300">Rent Now</button>
+                ) : (
+                  <p className="mt-2 text-red-500">Currently Unavailable</p>
+                )}
               </div>
             </InfoWindow>
           )}

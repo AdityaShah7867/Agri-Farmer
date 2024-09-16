@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, LogIn, Tractor, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Loader } from 'lucide-react';
 
 const LoginPage = () => {
@@ -36,9 +36,9 @@ const LoginPage = () => {
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
             <p className="mt-2 text-sm text-gray-600">
               Or{' '}
-              <a href="#" className="font-medium text-green-600 hover:text-green-500">
-                start your 14-day free trial
-              </a>
+              <Link to="/signup" className="font-medium text-green-600 hover:text-green-500">
+                create a new account
+              </Link>
             </p>
           </div>
 
@@ -155,9 +155,8 @@ const LoginPage = () => {
 
                 <div>
                   <button
-
                     disabled={loading}
-                      onClick={handleSubmit}
+                    onClick={handleSubmit}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   >
                     {loading ? <Loader className="h-5 w-5 mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}

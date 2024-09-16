@@ -59,7 +59,7 @@ export const ToolProvider = ({ children }) => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      toast.success('Tool fetched successfully');
+ 
       return response.data;
     } catch (error) {
       console.error('Error fetching tool by id:', error);

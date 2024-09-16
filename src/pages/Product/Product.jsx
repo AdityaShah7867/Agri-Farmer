@@ -128,7 +128,9 @@ const Product = () => {
           </button>
 
           <p className='text-xl font-semibold'>Owner Details:</p>
-          <p className='mb-2'>Name: XYZ</p>
+          <p className='mb-2'>Name: {tool?.owner?.name}</p>
+          <p className='mb-2'>Email: {tool?.owner?.email}</p>
+          <p className='mb-2'>Phone: {tool?.owner?.phone}</p>
           <div className="flex flex-col sm:flex-row gap-4">
 
             <button className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-600 transition-colors">

@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Share2 } from 'lucide-react';
+import { useTool } from '../../context/ToolContext';
+import { useParams } from 'react-router-dom';
 
 const Product = () => {
+  const { id } = useParams();
+  const { getToolById } = useTool();
+  const [tool, setTool] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const fetchTool = async () => {
+      const toolData = await getToolById(id); // Assuming tool ID is 1 for this example
+      setTool(toolData);
+    };
+    fetchTool();
+  }, [getToolById]);
 
   const handleMouseEnter = () => {
     setShowPopup(true);
@@ -13,11 +26,15 @@ const Product = () => {
   };
 
   const productDetails = {
-    name: "Heavy-Duty Tractor",
-    description:
-      "A powerful tractor suitable for large-scale farming operations. Ideal for plowing, tilling, and heavy hauling tasks.",
+    id: tool?.id,
+    name: tool?.name, 
+    description: tool?.description,
+    pricePerDay: tool?.pricePerDay ? tool.pricePerDay.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) : null,
+    priceFor7Days: tool?.pricePerDay ? (tool.pricePerDay * 7 * 0.9 / 7).toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) : null, // 10% discount
+    priceFor30Days: tool?.pricePerDay ? (tool.pricePerDay * 30 * 0.75 / 30).toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) : null,// 25% discount
+    pricelastrange: tool?.pricePerDay ? (tool.pricePerDay * 30 * 0.65 / 30).toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) : null, // 35% discount 
     imageUrl:
-      "https://www.deere.co.in/assets/images/region-1/products/tractors/john-deere-e-series-cab.jpg",
+      `${process.env.REACT_APP_BACKEND_URL}/${tool?.images[0]}`,
     url: window.location.href, // The current page URL
   };
 
@@ -44,16 +61,15 @@ const Product = () => {
 
   return (
     <div className=" mx-auto p-6 bg-white rounded-lg mt-10">
-      <h1 className="text-3xl font-bold mb-4 text-center">Heavy-Duty Tractor</h1>
+      <h1 className="text-3xl font-bold mb-4 text-center">{productDetails.name}</h1>
       <p className="text-gray-600 mb-6 text-center text-lg">
-        A powerful tractor suitable for large-scale farming operations. Ideal
-        for plowing, tilling, and heavy hauling tasks.
+        {productDetails.description}
       </p>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/2">
           <img
-            src="https://www.deere.co.in/assets/images/region-1/products/tractors/john-deere-e-series-cab.jpg"
-            alt="Heavy-Duty Tractor"
+            src={productDetails.imageUrl}
+            alt={productDetails.name}
             className="w-full h-auto rounded-lg shadow-md"
           />
         </div>
@@ -86,15 +102,15 @@ const Product = () => {
             <ul className="space-y-2">
               <li className="flex justify-between items-center">
                 <span>1 day:</span>
-                <span className="font-semibold">$100/day</span>
+                <span className="font-semibold">{productDetails.pricePerDay}/day</span>
               </li>
               <li className="flex justify-between items-center">
                 <span>7 days:</span>
-                <span className="font-semibold">$90/day</span>
+                <span className="font-semibold">{productDetails.priceFor7Days}/day</span>
               </li>
               <li className="flex justify-between items-center">
                 <span>30 days:</span>
-                <span className="font-semibold">$80/day</span>
+                <span className="font-semibold">{productDetails.priceFor30Days}/day</span>
               </li>
             </ul>
           </div>
@@ -103,7 +119,7 @@ const Product = () => {
               Dynamic Pricing Range
             </h2>
             <p className="text-gray-600">
-              $80 - $100 per day (varies based on rental duration)
+            {productDetails.pricePerDay} - {productDetails.pricelastrange} per day (varies based on rental duration)
             </p>
           </div>
           <button className=" bg-green-500 text-white py-2 px-4 rounded-lg w-full mb-4 hover:bg-green-600 transition-colors">
@@ -119,10 +135,10 @@ const Product = () => {
               <i className="fas fa-comment" />
               Chat
             </button>
-            <button className="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-yellow-600 transition-colors">
+            <a href='' className="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-yellow-600 transition-colors">
               <i className="fas fa-phone" />
               Call
-            </button>
+            </a>
           </div>
           <button className="w-full mt-4 bg-purple-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-600 transition-colors">
             <i className="fas fa-robot" />

@@ -14,7 +14,7 @@ import Videocall from "./pages/video call/Videocall";
 import Product from "./pages/Product/Product";
 import Footer from "./pages/common/Footer";
 import Setting from "./pages/Setting/Setting";
-import MicrosoftTranslator from "./Translate;
+import MicrosoftTranslator from "./Translate";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SignupPage from "./pages/auth/Singup";
 import PrivateRoutes from "./helper/PrivateRoutes";
@@ -42,7 +42,7 @@ const AppContent = () => {
           <Route path="/forum" element={<Forum />} />
           <Route path="/calendar" element={<RentalCalendar />} />
           <Route path="/videocall" element={<Videocall />} />
-          <Route path="/product" element={<Product />} />
+          <Route path="/product/:id" element={<Product />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path='/Setting' element={<Setting />} />
         </Route>

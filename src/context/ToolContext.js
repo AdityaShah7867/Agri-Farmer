@@ -1,18 +1,21 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useAuth } from './AuthContext';
 const ToolContext = createContext();
 
 const routes = {
-    addTool: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/create`,
-    getTools: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/get`,
-    getToolById: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/getById`,
-    deleteTool: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/delete`,
-    updateTool: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/update`
+  addTool: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/create`,
+  getTools: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/get`,
+  getToolById: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/getById`,
+  deleteTool: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/delete`,
+  updateTool: `${process.env.REACT_APP_BACKEND_URL}/api/equipment/update`
 }
 
 export const ToolProvider = ({ children }) => {
   const [tools, setTools] = useState([]);
+
+  const { user } = useAuth();
 
   const addTool = useCallback(async (formData) => {
     try {
@@ -99,8 +102,10 @@ export const ToolProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    getTools();
-  }, [getTools]);
+    if (user) {
+      getTools();
+    }
+  }, [user, getTools]);
 
   const value = {
     tools,

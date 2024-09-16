@@ -31,9 +31,9 @@ const ToolCard = ({ tool, currentUser, onEdit, onDelete }) => (
             </button>
           </div>
         ) : (
-          <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+          <a href={`/product/${tool.id}`} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
             Rent Now
-          </button>
+          </a>
         )}
       </div>
     </div>

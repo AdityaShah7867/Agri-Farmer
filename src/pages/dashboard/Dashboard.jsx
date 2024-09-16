@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Sun, CloudRain, DollarSign, Tractor, CheckCircle, XCircle, X, Menu } from 'lucide-react';
+import { Sun, Cloud, CloudRain, Wind, Droplets, Search, MapPin, X, Menu, Tractor, CheckCircle, XCircle } from 'lucide-react';
+const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 
 const mockData = [
   { month: 'Jan', rentals: 20, shares: 15 },
@@ -25,8 +26,222 @@ const mockMarketPrices = [
   { product: 'Cotton', price: 0.88, unit: 'pound' },
 ];
 
+const mockAvailableEquipment = [
+  { id: 1, name: 'Tractor', brand: 'John Deere', model: '8R 410', status: 'Available' },
+  { id: 2, name: 'Harvester', brand: 'Case IH', model: 'Axial-Flow 250 Series', status: 'In Use' },
+  { id: 3, name: 'Seeder', brand: 'Kinze', model: '3660', status: 'Available' },
+  { id: 4, name: 'Sprayer', brand: 'Apache', model: 'AS1250', status: 'Maintenance' },
+  { id: 5, name: 'Plow', brand: 'Kuhn', model: 'Multi-Leader', status: 'Available' },
+];
+
+const WeatherIcon = ({ condition, className }) => {
+  const iconClass = `w-12 h-12 ${className}`;
+  switch (condition.toLowerCase()) {
+    case 'sunny':
+    case 'clear':
+      return <Sun className={`${iconClass} text-yellow-400`} />;
+    case 'partly cloudy':
+    case 'cloudy':
+      return <Cloud className={`${iconClass} text-gray-400`} />;
+    case 'rain':
+    case 'light rain':
+    case 'moderate rain':
+      return <CloudRain className={`${iconClass} text-blue-400`} />;
+    case 'heavy rain':
+      return <Droplets className={`${iconClass} text-blue-600`} />;
+    default:
+      return <Sun className={`${iconClass} text-yellow-400`} />;
+  }
+};
+
 const WeatherModal = ({ isOpen, onClose }) => {
-  // ... (WeatherModal component remains unchanged)
+  const [weather, setWeather] = useState(null);
+  const [location, setLocation] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchWeatherByGeolocation();
+    }
+  }, [isOpen]);
+
+  const fetchWeatherByGeolocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          fetchWeather(`${latitude},${longitude}`);
+        },
+        err => {
+          setError("Unable to retrieve your location. Please enter a city name.");
+          setLoading(false);
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by your browser. Please enter a city name.");
+      setLoading(false);
+    }
+  };
+
+  const fetchWeather = async (query) => {
+    try {
+      const response = await fetch(
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${query}&days=3&aqi=no&alerts=no`
+      );
+      if (!response.ok) {
+        throw new Error('Weather data not found');
+      }
+      const data = await response.json();
+      setWeather(data);
+      setLocation(data.location.name);
+      setLoading(false);
+    } catch (err) {
+      setError('Error fetching weather data. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (location) {
+      setLoading(true);
+      fetchWeather(location);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-3xl font-bold text-blue-800">Weather Forecast</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mb-8">
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-md">
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Enter city name"
+                className="w-full pl-10 pr-4 py-2 rounded-full border-2 border-blue-300 focus:border-blue-500 focus:outline-none transition-colors"
+              />
+              <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-blue-400" />
+            </div>
+            <button type="submit" className="ml-4 bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 flex items-center">
+              <Search className="h-5 w-5 mr-2" />
+              Search
+            </button>
+          </div>
+        </form>
+
+        {loading && <p className="text-center text-xl">Loading weather data...</p>}
+        {error && <p className="text-center text-xl text-red-500">{error}</p>}
+
+        {weather && (
+          <div className="space-y-8">
+            <div className="bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-3xl font-semibold text-blue-800">{weather.location.name}</h2>
+                <p className="text-lg text-gray-600">{new Date(weather.location.localtime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <WeatherIcon condition={weather.current.condition.text} className="mr-4" />
+                  <div>
+                    <p className="text-5xl font-bold text-blue-600">{weather.current.temp_c}°C</p>
+                    <p className="text-xl text-gray-600">{weather.current.condition.text}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="flex items-center justify-end text-gray-600">
+                    <Droplets className="h-5 w-5 mr-2 text-blue-400" />
+                    Feels like {weather.current.feelslike_c}°C
+                  </p>
+                  <p className="flex items-center justify-end mt-2 text-gray-600">
+                    <Wind className="h-5 w-5 mr-2 text-blue-400" />
+                    Wind {weather.current.wind_kph} km/h
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-semibold mb-4 text-blue-800">3-Day Forecast</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {weather.forecast.forecastday.map((day) => (
+                  <div key={day.date} className="bg-white rounded-xl shadow-lg p-4 transition-all duration-300 hover:shadow-xl">
+                    <h4 className="text-xl font-semibold mb-2 text-blue-700">
+                      {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long' })}
+                    </h4>
+                    <div className="flex items-center justify-between">
+                      <WeatherIcon condition={day.day.condition.text} className="mr-4" />
+                      <div className="text-right">
+                        <p className="text-3xl font-bold text-blue-600">{day.day.avgtemp_c}°C</p>
+                        <p className="text-gray-600">{day.day.condition.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const EquipmentModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl w-3/4 max-w-4xl">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Available Equipment</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <X size={24} />
+          </button>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="py-2 px-4 text-left">Name</th>
+                <th className="py-2 px-4 text-left">Brand</th>
+                <th className="py-2 px-4 text-left">Model</th>
+                <th className="py-2 px-4 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mockAvailableEquipment.map((item) => (
+                <tr key={item.id} className="border-b">
+                  <td className="py-2 px-4">{item.name}</td>
+                  <td className="py-2 px-4">{item.brand}</td>
+                  <td className="py-2 px-4">{item.model}</td>
+                  <td className="py-2 px-4">
+                    <span className={`px-2 py-1 rounded-full text-xs ${item.status === 'Available' ? 'bg-green-200 text-green-800' :
+                        item.status === 'In Use' ? 'bg-blue-200 text-blue-800' :
+                          'bg-yellow-200 text-yellow-800'
+                      }`}>
+                      {item.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const MarketPricesSidebar = ({ isOpen, onClose }) => (
@@ -64,10 +279,11 @@ const VerticalMarketPricesButton = ({ onClick }) => (
 const Dashboard = () => {
   const [requests, setRequests] = useState(mockRequests);
   const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
+  const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
   const [isMarketPricesSidebarOpen, setIsMarketPricesSidebarOpen] = useState(false);
 
   const handleRequestAction = (id, action) => {
-    setRequests(requests.map(req => 
+    setRequests(requests.map(req =>
       req.id === id ? { ...req, status: action } : req
     ));
   };
@@ -94,12 +310,12 @@ const Dashboard = () => {
               </div>
               <p className="mt-2 text-gray-600">Click to view details</p>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow">
+            <div className="bg-white p-6 rounded-lg shadow cursor-pointer" onClick={() => setIsEquipmentModalOpen(true)}>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-800">Available Equipment</h2>
                 <Tractor className="text-blue-500" size={24} />
               </div>
-              <p className="mt-2 text-gray-600">15 items available</p>
+              <p className="mt-2 text-gray-600">Click to view details</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
               <div className="flex items-center justify-between">
@@ -159,11 +375,10 @@ const Dashboard = () => {
                       <td className="py-2 px-4">{request.requestedBy}</td>
                       <td className="py-2 px-4">{request.requestDate}</td>
                       <td className="py-2 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          request.status === 'accepted' ? 'bg-green-200 text-green-800' :
-                          request.status === 'rejected' ? 'bg-red-200 text-red-800' :
-                          'bg-yellow-200 text-yellow-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${request.status === 'accepted' ? 'bg-green-200 text-green-800' :
+                            request.status === 'rejected' ? 'bg-red-200 text-red-800' :
+                              'bg-yellow-200 text-yellow-800'
+                          }`}>
                           {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                         </span>
                       </td>
@@ -194,6 +409,7 @@ const Dashboard = () => {
         </div>
       </div>
       <WeatherModal isOpen={isWeatherModalOpen} onClose={() => setIsWeatherModalOpen(false)} />
+      <EquipmentModal isOpen={isEquipmentModalOpen} onClose={() => setIsEquipmentModalOpen(false)} />
     </div>
   );
 };

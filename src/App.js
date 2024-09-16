@@ -14,11 +14,11 @@ import Videocall from "./pages/video call/Videocall";
 import Product from "./pages/Product/Product";
 import Footer from "./pages/common/Footer";
 import Setting from "./pages/Setting/Setting";
-import MicrosoftTranslator from "./Translate";
+import MicrosoftTranslator from "./Translate;
+import Dashboard from "./pages/dashboard/Dashboard";
 import SignupPage from "./pages/auth/Singup";
 import PrivateRoutes from "./helper/PrivateRoutes";
 import PageNotFound from "./pages/PageNotFound";
-
 
 const AppContent = () => {
   const location = useLocation(); // Now inside Router    
@@ -31,14 +31,10 @@ const AppContent = () => {
 
       <Routes>
         <Route path="*" element={<PageNotFound />} />
-
-      
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
-
         <Route path="/" element={<PrivateRoutes />}>
-        
           <Route path="/addtools" element={<ProductListingForm />} />
           <Route path="/tools" element={<AvailableToolsListing />} />
           <Route path="/" element={<Landing />} />
@@ -47,10 +43,12 @@ const AppContent = () => {
           <Route path="/calendar" element={<RentalCalendar />} />
           <Route path="/videocall" element={<Videocall />} />
           <Route path="/product" element={<Product />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path='/Setting' element={<Setting />} />
         </Route>
         </Routes>
       {/* </PrivateRoutes> */}
+
       {location.pathname !== "/videocall" && <Footer />}
 
     </>

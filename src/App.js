@@ -17,9 +17,11 @@ import Setting from "./pages/Setting/Setting";
 import MicrosoftTranslator from "./Translate";
 import SignupPage from "./pages/auth/Singup";
 import PrivateRoutes from "./helper/PrivateRoutes";
+import PageNotFound from "./pages/PageNotFound";
+
 
 const AppContent = () => {
-  const location = useLocation(); // Now inside Router
+  const location = useLocation(); // Now inside Router    
 
   return (
     <>
@@ -28,7 +30,7 @@ const AppContent = () => {
       <ToastContainer />
 
       <Routes>
-
+        <Route path="*" element={<PageNotFound />} />
 
       
         <Route path="/login" element={<LoginPage />} />

@@ -20,6 +20,7 @@ const MicrosoftTranslator = () => {
         setTimeout(initializeWidget, 1000);
       }
     };
+    //shit traslaot
 
     script.onload = initializeWidget;
     document.body.appendChild(script);

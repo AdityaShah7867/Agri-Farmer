@@ -1,19 +1,19 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useTool } from '../../context/ToolContext';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const containerStyle = {
   width: '100%',
-  height: '70vh'
+  height: '100vh'
 };
 
-// Update the center to use the owner's location
 const center = {
-  lat: 19.4528376, // Latitude from owner details
-  lng: 19.4528376  // Longitude from owner details (Note: this seems to be the same as latitude in the provided data)
+  lat: 19.4528376,
+  lng: 19.4528376
 };
 
-// Custom icons for different tool categories
 const icons = {
   heavy: 'https://e7.pngegg.com/pngimages/887/788/png-clipart-john-deere-tractor-agriculture-tractor-car-agriculture.png',
   attachment: 'https://w1.pngwing.com/pngs/297/769/png-transparent-emoji-sticker-spanners-email-text-messaging-tool-hardware-wrench-hardware-accessory.png',
@@ -21,7 +21,6 @@ const icons = {
   default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-92otGDh6GDE3F8Qp2entkhQprJVRa2Zc9w&s'
 };
 
-// Update the allTools array with the new data
 const modifyToolData = (tools) => {
   return tools.map(tool => ({
     id: tool.id,
@@ -41,8 +40,6 @@ const modifyToolData = (tools) => {
   }));
 };
 
-
-
 const getCategoryFromName = (name) => {
   const lowercaseName = name.toLowerCase();
   if (lowercaseName.includes('tractor') || lowercaseName.includes('harvester')) return 'heavy';
@@ -51,33 +48,49 @@ const getCategoryFromName = (name) => {
   return 'default';
 };
 
-
-
 const Map = () => {
+  const navigate = useNavigate();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: `${process.env.REACT_APP_GOOGLE_MAPS_API_LOL}`
   });
 
+  const { user } = useAuth();
+
+useEffect(() => {
+  console.log(user);
+}, [user]);
+
   const { tools } = useTool();
-
-  console.log(tools);
-
-  const allTools = modifyToolData(tools);
-
+  const [allTools, setAllTools] = useState([]);
   const [map, setMap] = useState(null);
   const [selectedTool, setSelectedTool] = useState(null);
-  const [filteredTools, setFilteredTools] = useState(tools);
+  const [filteredTools, setFilteredTools] = useState([]);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterPrice, setFilterPrice] = useState('all');
 
-  console.log(allTools)
+  useEffect(() => {
+    if (tools.length > 0) {
+      const modifiedTools = modifyToolData(tools);
+      setAllTools(modifiedTools);
+      if (user) {
+     
+        const userTools = modifiedTools.filter(tool => tool.owner.id === user.id);
+        setFilteredTools(userTools);
+      
+      } else {
+        setFilteredTools(modifiedTools);
+      }
+    }
+  }, [tools, user]);
 
   const onLoad = useCallback(function callback(map) {
-    const bounds = new window.google.maps.LatLngBounds();
-    allTools.forEach(tool => bounds.extend(tool.position));
-    map.fitBounds(bounds);
+    if (allTools.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      allTools.forEach(tool => bounds.extend(tool.position));
+      map.fitBounds(bounds);
+    }
     setMap(map);
-  }, []);
+  }, [allTools]);
 
   const onUnmount = useCallback(function callback(map) {
     setMap(null);
@@ -97,16 +110,20 @@ const Map = () => {
       });
     }
     setFilteredTools(filtered);
-  }, [filterCategory, filterPrice]);
+  }, [filterCategory, filterPrice, allTools]);
+
+  useEffect(() => {
+    console.log('filteredTools', filteredTools);
+  }, [filteredTools]);
 
   return isLoaded ? (
     <div className="relative h-screen flex flex-col md:flex-row">
-      <div className="w-full md:w-1/4 p-4 bg-white shadow-md z-10 overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">Available Tools in Virar</h2>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Category</label>
+      <div className="w-full md:w-1/3 lg:w-1/4 p-6 bg-white shadow-lg z-10 overflow-y-auto">
+        <h2 className="text-3xl font-bold mb-6 text-green-700">Available Tools in Virar</h2>
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
           <select
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
           >
@@ -116,10 +133,10 @@ const Map = () => {
             <option value="handheld">Handheld Tools</option>
           </select>
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Price Range (₹/day)</label>
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range (₹/day)</label>
           <select
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
             value={filterPrice}
             onChange={(e) => setFilterPrice(e.target.value)}
           >
@@ -129,10 +146,10 @@ const Map = () => {
             <option value="over1000">Over ₹1000</option>
           </select>
         </div>
-        <ul className="space-y-2">
-          {filteredTools.map((tool) => (
-            <li key={tool.id} className="p-2 hover:bg-gray-100 rounded flex items-center">
-              <img src={icons[tool.category] || icons.default} alt={tool.category} className="w-6 h-6 mr-2" />
+        <ul className="space-y-4">
+          {filteredTools.filter(tool => tool.owner.email !== user.email).map((tool) => (
+            <li key={tool.id} className="p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition duration-200 flex items-center">
+              <img src={icons[tool.category] || icons.default} alt={tool.category} className="w-10 h-10 mr-4" />
               <button 
                 onClick={() => {
                   setSelectedTool(tool);
@@ -140,14 +157,14 @@ const Map = () => {
                 }}
                 className="text-left flex-grow"
               >
-                <span className="font-medium">{tool.name}</span>
-                <span className="block text-sm text-gray-500">₹{tool.price}/day</span>
+                <span className="font-semibold text-lg block">{tool.name}</span>
+                <span className="text-green-600 font-medium">₹{tool.price}/day</span>
               </button>
             </li>
           ))}
         </ul>
       </div>
-      <div className="w-full md:w-3/4 h-full">
+      <div className="w-full md:w-2/3 lg:w-3/4 h-full">
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={center}
@@ -162,7 +179,7 @@ const Map = () => {
               onClick={() => setSelectedTool(tool)}
               icon={{
                 url: icons[tool.category] || icons.default,
-                scaledSize: new window.google.maps.Size(30, 30)
+                scaledSize: new window.google.maps.Size(40, 40)
               }}
             />
           ))}
@@ -172,18 +189,22 @@ const Map = () => {
               position={selectedTool.position}
               onCloseClick={() => setSelectedTool(null)}
             >
-              <div>
-                <h3 className="font-bold text-lg">{selectedTool.name}</h3>
-                <p className="text-gray-600">{selectedTool.category}</p>
-                <p className="text-sm">{selectedTool.description}</p>
-                <p className="font-medium">₹{selectedTool.price}/day</p>
-                <p className="text-sm">Quantity: {selectedTool.quantity}</p>
-                <p className="text-sm">Owner: {selectedTool.owner.name}</p>
-                <p className="text-sm">Contact: {selectedTool.owner.phone}</p>
+              <div className="bg-white p-4 rounded-lg shadow-md max-w-sm">
+                <h3 className="font-bold text-xl mb-2 text-green-700">{selectedTool.name}</h3>
+                <p className="text-gray-600 mb-2 capitalize">{selectedTool.category}</p>
+                <p className="text-sm mb-3">{selectedTool.description}</p>
+                <p className="font-semibold text-lg mb-2 text-green-600">₹{selectedTool.price}/day</p>
+                <p className="text-sm mb-1">Quantity: {selectedTool.quantity}</p>
+                <p className="text-sm mb-1">Owner: {selectedTool.owner.name}</p>
+                <p className="text-sm mb-3">Contact: {selectedTool.owner.phone}</p>
                 {selectedTool.available ? (
-                  <button className="mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition duration-300">Rent Now</button>
+                  <button onClick={
+                    () => {
+                      navigate(`/product/${selectedTool.id}`)
+                    }
+                  } className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">Rent Now</button>
                 ) : (
-                  <p className="mt-2 text-red-500">Currently Unavailable</p>
+                  <p className="text-red-500 font-semibold text-center">Currently Unavailable</p>
                 )}
               </div>
             </InfoWindow>
@@ -191,7 +212,7 @@ const Map = () => {
         </GoogleMap>
       </div>
     </div>
-  ) : <div>Loading...</div>;
+  ) : <div className="flex justify-center items-center h-screen text-2xl font-bold text-gray-600">Loading...</div>;
 };
 
 export default Map;

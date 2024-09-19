@@ -19,6 +19,8 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import SignupPage from "./pages/auth/Singup";
 import PrivateRoutes from "./helper/PrivateRoutes";
 import PageNotFound from "./pages/PageNotFound";
+import Crop from "./pages/crop/Crop";
+import SoilDataComponent from "./pages/soilAnalysis/soilAnalysis";
 
 const AppContent = () => {
   const location = useLocation(); // Now inside Router    
@@ -45,11 +47,13 @@ const AppContent = () => {
           <Route path="/product/:id" element={<Product />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path='/Setting' element={<Setting />} />
+          <Route path='/crop' element={<Crop />} />
+          <Route path='/soilAnalysis' element={<SoilDataComponent />} />
         </Route>
         </Routes>
       {/* </PrivateRoutes> */}
 
-      {location.pathname !== "/videocall" && <Footer />}
+      {/* {location.pathname !== "/videocall" && <Footer />} */}
 
     </>
   );

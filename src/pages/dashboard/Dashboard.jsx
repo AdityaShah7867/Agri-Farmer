@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Sun, Cloud, CloudRain, Wind, Droplets, Search, MapPin, X, Menu, Tractor, CheckCircle, XCircle } from 'lucide-react';
-const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+import { useAuth } from '../../context/AuthContext';
 
+const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
+const urlOwner = `${process.env.REACT_APP_BACKEND_URL}/api/rental/getRequestsForOwner`;
+const urlFarmer = `${process.env.REACT_APP_BACKEND_URL}/api/rental/getRequestsForFarmer`;
+const urlAdmin = `${process.env.REACT_APP_BACKEND_URL}/api/rental/getForAdmin`;
+const urlReject = `${process.env.REACT_APP_BACKEND_URL}/api/rental/reject/rentalId`;
 const mockData = [
   { month: 'Jan', rentals: 20, shares: 15 },
   { month: 'Feb', rentals: 25, shares: 18 },
@@ -12,11 +17,6 @@ const mockData = [
   { month: 'Jun', rentals: 45, shares: 38 },
 ];
 
-const mockRequests = [
-  { id: 1, product: 'Tractor', requestedBy: 'John Doe', requestDate: '2024-09-20', status: 'pending' },
-  { id: 2, product: 'Harvester', requestedBy: 'Jane Smith', requestDate: '2024-09-22', status: 'pending' },
-  { id: 3, product: 'Seeder', requestedBy: 'Bob Johnson', requestDate: '2024-09-25', status: 'pending' },
-];
 
 const mockMarketPrices = [
   { product: 'Wheat', price: 7.25, unit: 'bushel' },
@@ -277,20 +277,65 @@ const VerticalMarketPricesButton = ({ onClick }) => (
 );
 
 const Dashboard = () => {
-  const [requests, setRequests] = useState(mockRequests);
+
   const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
   const [isEquipmentModalOpen, setIsEquipmentModalOpen] = useState(false);
   const [isMarketPricesSidebarOpen, setIsMarketPricesSidebarOpen] = useState(false);
+  const [requestsOwner, setRequestsOwner] = useState([]);
+  const [requestsFarmer, setRequestsFarmer] = useState([]);
 
-  const handleRequestAction = (id, action) => {
-    setRequests(requests.map(req =>
-      req.id === id ? { ...req, status: action } : req
-    ));
+  const { user, logout } = useAuth();
+
+  const getRequestsOwner = async () => {
+    const response = await fetch(urlOwner, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    const data = await response.json();
+    setRequestsOwner(data);
   };
 
-  const acceptedCount = requests.filter(req => req.status === 'accepted').length;
-  const rejectedCount = requests.filter(req => req.status === 'rejected').length;
-  const pendingCount = requests.filter(req => req.status === 'pending').length;
+  const getRequestsFarmer = async () => {
+    const response = await fetch(urlFarmer, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    const data = await response.json();
+    setRequestsFarmer(data);
+  };
+  
+  useEffect(() => {
+    getRequestsOwner();
+    getRequestsFarmer();
+  }, []);
+
+  const handleRequestAction = async (id, action) => {
+    setRequestsOwner(requestsOwner.map(req =>
+      req.id === id ? { ...req, status: action } : req
+    ));
+
+    const urlAccept = `${process.env.REACT_APP_BACKEND_URL}/api/rental/accept/${id}`;
+    const response = await fetch(urlAccept, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    if (response.ok) {
+      console.log('Request Accepted successful');
+    } else {
+      console.log('Request action failed');
+    }
+  };
+
+  const acceptedCount = requestsOwner.filter(req => req.status === 'ACCEPTED').length;
+  const rejectedCount = requestsOwner.filter(req => req.status === 'REJECTED').length;
+  const pendingCount = requestsOwner.filter(req => req.status === 'PENDING').length;
 
   return (
     <div className="min-h-screen pl-4 bg-gray-100">
@@ -341,8 +386,8 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Request Management</h2>
+          <div className="bg-white p-6 rounded-lg shadow mb-8">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Request Management (As Owner)</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               <div className="bg-green-100 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold text-green-800">Accepted</h3>
@@ -361,44 +406,87 @@ const Dashboard = () => {
               <table className="min-w-full bg-white">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="py-2 px-4 text-left">Product</th>
+                    <th className="py-2 px-4 text-left">Equipment</th>
                     <th className="py-2 px-4 text-left">Requested By</th>
-                    <th className="py-2 px-4 text-left">Request Date</th>
+                    <th className="py-2 px-4 text-left">Start Date</th>
+                    <th className="py-2 px-4 text-left">End Date</th>
+                    <th className="py-2 px-4 text-left">Price</th>
                     <th className="py-2 px-4 text-left">Status</th>
                     <th className="py-2 px-4 text-left">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {requests.map((request) => (
+                  {requestsOwner.map((request) => (
                     <tr key={request.id} className="border-b">
-                      <td className="py-2 px-4">{request.product}</td>
-                      <td className="py-2 px-4">{request.requestedBy}</td>
-                      <td className="py-2 px-4">{request.requestDate}</td>
+                      <td className="py-2 px-4">{request.equipment.name}</td>
+                      <td className="py-2 px-4">{request.farmer.name}</td>
+                      <td className="py-2 px-4">{new Date(request.startDate).toLocaleDateString()}</td>
+                      <td className="py-2 px-4">{new Date(request.endDate).toLocaleDateString()}</td>
+                      <td className="py-2 px-4">${request.price}</td>
                       <td className="py-2 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${request.status === 'accepted' ? 'bg-green-200 text-green-800' :
-                            request.status === 'rejected' ? 'bg-red-200 text-red-800' :
-                              'bg-yellow-200 text-yellow-800'
-                          }`}>
-                          {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          request.status === 'ACCEPTED' ? 'bg-green-200 text-green-800' :
+                          request.status === 'REJECTED' ? 'bg-red-200 text-red-800' :
+                          'bg-yellow-200 text-yellow-800'
+                        }`}>
+                          {request.status}
                         </span>
                       </td>
                       <td className="py-2 px-4">
-                        {request.status === 'pending' && (
+                        {request.status === 'PENDING' && (
                           <>
                             <button
-                              onClick={() => handleRequestAction(request.id, 'accepted')}
+                              onClick={() => handleRequestAction(request.id, 'ACCEPTED')}
                               className="mr-2 text-green-600 hover:text-green-800"
                             >
                               <CheckCircle size={20} />
                             </button>
                             <button
-                              onClick={() => handleRequestAction(request.id, 'rejected')}
+                              onClick={() => handleRequestAction(request.id, 'REJECTED')}
                               className="text-red-600 hover:text-red-800"
                             >
                               <XCircle size={20} />
                             </button>
                           </>
                         )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">My Requests (As Farmer)</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="py-2 px-4 text-left">Equipment</th>
+                    <th className="py-2 px-4 text-left">Owner</th>
+                    <th className="py-2 px-4 text-left">Start Date</th>
+                    <th className="py-2 px-4 text-left">End Date</th>
+                    <th className="py-2 px-4 text-left">Price</th>
+                    <th className="py-2 px-4 text-left">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {requestsFarmer.map((request) => (
+                    <tr key={request.id} className="border-b">
+                      <td className="py-2 px-4">{request.equipment.name}</td>
+                      <td className="py-2 px-4">{request.equipment.owner.name}</td>
+                      <td className="py-2 px-4">{new Date(request.startDate).toLocaleDateString()}</td>
+                      <td className="py-2 px-4">{new Date(request.endDate).toLocaleDateString()}</td>
+                      <td className="py-2 px-4">${request.price}</td>
+                      <td className="py-2 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          request.status === 'ACCEPTED' ? 'bg-green-200 text-green-800' :
+                          request.status === 'REJECTED' ? 'bg-red-200 text-red-800' :
+                          'bg-yellow-200 text-yellow-800'
+                        }`}>
+                          {request.status}
+                        </span>
                       </td>
                     </tr>
                   ))}

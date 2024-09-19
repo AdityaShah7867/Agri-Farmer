@@ -3,6 +3,7 @@ import { Eye, EyeOff, LogIn, Tractor, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Loader } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -16,9 +17,14 @@ const LoginPage = () => {
       await login(email, password).then((result) => {
         if (result) {
           navigate('/');
+          toast.success('Login successful');
+        }else{
+          toast.error('Login failed');
         }
-        console.log('Login successful:', result);
+       
+      
     }).catch((error) => {
+      toast.error('Login failed');
         console.error('Login failed:', error);
     });
   };

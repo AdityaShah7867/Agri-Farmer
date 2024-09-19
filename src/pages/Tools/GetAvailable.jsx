@@ -2,38 +2,54 @@ import React, { useState, useEffect } from 'react';
 import { Search, Sliders, Star, DollarSign, Edit, Trash2, X } from 'lucide-react';
 import { useTool } from '../../context/ToolContext';
 import { useAuth } from '../../context/AuthContext';
+import { NavLink } from 'react-router-dom';
 
 const ToolCard = ({ tool, currentUser, onEdit, onDelete }) => (
-  <div className="bg-white rounded-lg shadow-md overflow-hidden">
-    <img src={`${process.env.REACT_APP_BACKEND_URL}/${tool.images[0]}`} alt={tool.name} className="w-full h-48 object-cover" />
-    <div className="p-4">
-      <h3 className="text-lg font-semibold mb-2">{tool.name}</h3>
-      <p className="text-gray-600 text-sm mb-2">{tool.description}</p>
-      <div className="flex items-center mb-2">
+  <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div className="relative">
+      <img 
+        src={tool.images && tool.images.length > 0 && tool.images[0]
+          ? `${process.env.REACT_APP_BACKEND_URL}/${tool.images[0]}` 
+          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGY6b7YqSv02iiBVLEoVUx10301RnmFA1x3BLU61s-qnicrJSzIEmPHgPIGQxclEXbC2k&usqp=CAU'} 
+        alt={tool.name} 
+        className="w-full h-56 object-cover transition-transform duration-300 hover:scale-105" 
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGY6b7YqSv02iiBVLEoVUx10301RnmFA1x3BLU61s-qnicrJSzIEmPHgPIGQxclEXbC2k&usqp=CAU';
+        }}
+      />
+      <div className="absolute top-0 right-0 bg-green-500 text-white px-2 py-1 m-2 rounded-md text-sm font-semibold">
+        ${tool.pricePerDay}/day
+      </div>
+    </div>
+    <div className="p-5">
+      <h3 className="text-xl font-bold mb-2 text-gray-800">{tool.name}</h3>
+      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{tool.description}</p>
+      <div className="flex items-center mb-4">
         {[...Array(5)].map((_, i) => (
           <Star key={i} className={`h-5 w-5 ${i < 3 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
         ))}
+        <span className="ml-2 text-sm text-gray-600">(3 reviews)</span>
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-green-600 font-semibold flex items-center">
-          <DollarSign className="h-4 w-4 mr-1" />
-          {tool.pricePerDay}/day
-        </span>
         {currentUser && currentUser.id === tool.ownerId ? (
           <div className="flex space-x-2">
-            <button onClick={() => onEdit(tool)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
-              <Edit className="h-4 w-4 mr-1" />
+            <button onClick={() => onEdit(tool)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center">
+              <Edit className="h-4 w-4 mr-2" />
               Edit
             </button>
-            <button onClick={() => onDelete(tool.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm flex items-center">
-              <Trash2 className="h-4 w-4 mr-1" />
+            <button onClick={() => onDelete(tool.id)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300 flex items-center">
+              <Trash2 className="h-4 w-4 mr-2" />
               Delete
             </button>
           </div>
         ) : (
-          <a href={`/product/${tool.id}`} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+          <NavLink to={`/product/${tool.id}`} className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors duration-300 inline-flex items-center">
             Rent Now
-          </a>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </NavLink>
         )}
       </div>
     </div>
@@ -174,60 +190,73 @@ const AvailableToolsListing = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-8">Available Tools for Rent</h1>
+        <h1 className="text-4xl font-extrabold text-center text-gray-900 mb-12 animate-fade-in">Discover Available Tools</h1>
         
         {/* Search and Filter Section */}
-        <div className="mb-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="w-full md:w-1/3 mb-4 md:mb-0">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search tools..."
-                className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-green-500 focus:border-green-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+        <div className="mb-10 bg-white p-6 rounded-lg shadow-md animate-slide-in-top">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4">
+            <div className="w-full md:w-1/2">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search for tools..."
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+              </div>
             </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <select
-              className="border rounded-md px-3 py-2 focus:ring-green-500 focus:border-green-500"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="name">Sort by Name</option>
-              <option value="priceAsc">Price: Low to High</option>
-              <option value="priceDesc">Price: High to Low</option>
-            </select>
+            <div className="flex items-center space-x-4">
+              <select
+                className="border-2 border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition duration-150 ease-in-out"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="name">Sort by Name</option>
+                <option value="priceAsc">Price: Low to High</option>
+                <option value="priceDesc">Price: High to Low</option>
+              </select>
+              <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-150 ease-in-out flex items-center animate-pulse">
+                <Sliders className="mr-2 h-5 w-5" />
+                Filters
+              </button>
+            </div>
           </div>
         </div>
         
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAndSortedTools.map(tool => (
-            <ToolCard 
-              key={tool.id} 
-              tool={tool} 
-              currentUser={user}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredAndSortedTools.map((tool, index) => (
+            <div key={tool.id} className={`animate-fade-in-up`} style={{animationDelay: `${index * 0.1}s`}}>
+              <ToolCard 
+                tool={tool} 
+                currentUser={user}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </div>
           ))}
         </div>
         
         {/* No Results Message */}
         {filteredAndSortedTools.length === 0 && (
-          <p className="text-center text-gray-500 mt-8">No tools found matching your criteria.</p>
+          <div className="text-center py-12 animate-fade-in">
+            <img src="/no-results.svg" alt="No results" className="mx-auto w-48 h-48 mb-6 animate-bounce" />
+            <p className="text-xl text-gray-600">No tools found matching your criteria.</p>
+            <p className="text-gray-500 mt-2">Try adjusting your search or filters.</p>
+          </div>
         )}
 
         {/* Edit Modal */}
         {editingTool && (
-          <EditModal
-            tool={editingTool}
-            onClose={() => setEditingTool(null)}
-            onSave={handleSaveEdit}
-          />
+          <div className="animate-fade-in">
+            <EditModal
+              tool={editingTool}
+              onClose={() => setEditingTool(null)}
+              onSave={handleSaveEdit}
+            />
+          </div>
         )}
       </div>
     </div>

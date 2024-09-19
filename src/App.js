@@ -21,6 +21,7 @@ import PrivateRoutes from "./helper/PrivateRoutes";
 import PageNotFound from "./pages/PageNotFound";
 import Crop from "./pages/crop/Crop";
 import SoilDataComponent from "./pages/soilAnalysis/soilAnalysis";
+import GeminiChat from "./pages/Chat/Chat";
 
 const AppContent = () => {
   const location = useLocation(); // Now inside Router    
@@ -51,7 +52,10 @@ const AppContent = () => {
           <Route path='/soilAnalysis' element={<SoilDataComponent />} />
         </Route>
         </Routes>
+
+        <GeminiChat />
       {/* </PrivateRoutes> */}
+
 
       {/* {location.pathname !== "/videocall" && <Footer />} */}
 
